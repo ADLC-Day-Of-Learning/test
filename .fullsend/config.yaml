@@ -6,13 +6,9 @@ agents:
       model: google-vertex/gemini-3.8-flash
     - name: fix
       model: google-vertex/gemini-3.8-flash
-    - name: prioritize
-      model: google-vertex/gemini-3.8-flash
     - name: retro
       model: google-vertex/gemini-3.8-flash
     - name: review
-      model: google-vertex/gemini-3.8-flash
-    - name: scribe
       model: google-vertex/gemini-3.8-flash
     - name: triage
       model: google-vertex/gemini-3.8-flash
