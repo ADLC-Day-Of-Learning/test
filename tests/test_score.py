@@ -1,6 +1,7 @@
 """Unit tests for Score tracking and UI rendering."""
 
 import pygame
+import pytest
 
 from src.ball import Ball
 from src.constants import TARGET_SCORE
@@ -102,3 +103,61 @@ def test_score_draw_and_pause_draw():
         surface.get_at((x, 280))[:3] != (0, 0, 0) for x in range(350, 450)
     )
     assert has_win_pixels
+
+
+def test_custom_player_names_and_winner():
+    """Verify custom player names are preserved and announced upon winning."""
+    score = Score(
+        target_score=2, player1_name="Champion", player2_name="Challenger"
+    )
+    assert score.player1_name == "Champion"
+    assert score.player2_name == "Challenger"
+    assert score.get_winner() is None
+
+    score.player1_point()
+    score.player1_point()
+    assert score.is_game_over() is True
+    assert score.get_winner() == "Champion"
+
+    score.reset()
+    score.set_player_names(player1="Alpha", player2="Beta")
+    score.player2_point()
+    score.player2_point()
+    assert score.is_game_over() is True
+    assert score.get_winner() == "Beta"
+
+
+def test_player_names_empty_fallback():
+    """Verify empty or whitespace-only names fall back to defaults."""
+    score = Score(player1_name="", player2_name="   ")
+    assert score.player1_name == "Player 1"
+    assert score.player2_name == "Player 2"
+
+    score.set_player_names(player1="", player2="   ")
+    assert score.player1_name == "Player 1"
+    assert score.player2_name == "Player 2"
+
+
+def test_score_set_player_name_indexed():
+    """Verify indexed set_player_name updates individual player names."""
+    score = Score()
+    score.set_player_name(1, "Alice")
+    assert score.player1_name == "Alice"
+    assert score.player2_name == "Player 2"
+
+    score.set_player_name(2, "Bob")
+    assert score.player2_name == "Bob"
+
+    score.set_player_name(1, "   ")
+    assert score.player1_name == "Player 1"
+
+    with pytest.raises(ValueError):
+        score.set_player_name(3, "Invalid")
+
+
+def test_score_set_player_names_partial():
+    """Verify set_player_names preserves unsupplied player names."""
+    score = Score(player1_name="Alice", player2_name="Bob")
+    score.set_player_names(player2="Charlie")
+    assert score.player1_name == "Alice"
+    assert score.player2_name == "Charlie"

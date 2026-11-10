@@ -8,6 +8,7 @@ Pong is one of the earliest arcade video games. In this game, two players contro
 
 ## Features
 
+- **Start Menu & Customization**: Interactive start menu to customize player names and choose paddle colors (RGB: Red, Green, Blue) with real-time paddle previews.
 - **Classic Gameplay**: Authentic paddle movement, ball bouncing physics, and score tracking.
 - **Controls**: Smooth two-player keyboard controls (W/S and Up/Down arrows).
 - **Dynamic Ball Speed**: Ball speed increases with successive paddle hits for added challenge.
@@ -57,12 +58,19 @@ pytest
 
 ### Controls
 
+#### Main Menu
+- **Edit Names:** Click on text box or press `TAB` to switch fields, type custom name (defaults to "Player 1" / "Player 2" if left blank)
+- **Select Paddle Color:** Click on `Red`, `Green`, or `Blue` buttons for either player
+- **Start Game:** Click `START GAME` or press `ENTER` / `SPACE`
+
+#### In-Game
 | Player | Move Up | Move Down |
 | :--- | :--- | :--- |
 | **Player 1 (Left)** | `W` | `S` |
 | **Player 2 (Right)** | `Up Arrow` (`↑`) | `Down Arrow` (`↓`) |
 
 - **Pause Game:** `P` or `Space`
+- **Return to Menu:** `M` (when game is over)
 - **Quit Game:** `ESC` or close window
 
 ## Project Structure
@@ -74,6 +82,7 @@ pytest
 ├── src/
 │   ├── __init__.py  # Package initialization
 │   ├── main.py      # Game entry point and main game loop
+│   ├── menu.py      # Start menu and player customization UI
 │   ├── ball.py      # Ball movement and collision logic
 │   ├── paddle.py    # Paddle movement and player input
 │   ├── score.py     # Scoreboard and UI rendering
@@ -83,6 +92,7 @@ pytest
 │   ├── conftest.py  # Pytest configuration and fixtures
 │   ├── test_ball.py # Ball physics and collision tests
 │   ├── test_game.py # Game loop and input handling tests
+│   ├── test_menu.py # Start menu UI and customization tests
 │   ├── test_paddle.py # Paddle movement and bounds tests
 │   ├── test_score.py  # Score tracking and UI rendering tests
 │   └── test_sound.py  # Sound manager fallback tests

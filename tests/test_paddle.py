@@ -2,6 +2,7 @@
 
 import pygame
 
+from src.constants import BLUE, RED
 from src.paddle import Paddle
 
 
@@ -67,3 +68,18 @@ def test_paddle_draw():
     # Check that pixels are drawn at the paddle position
     color = surface.get_at((int(paddle.x) + 2, int(paddle.y) + 2))
     assert color[:3] == (255, 255, 255)
+
+
+def test_paddle_custom_color():
+    surface = pygame.Surface((800, 600))
+    paddle = Paddle(x=20, y=150, color=RED)
+    assert paddle.color == RED
+    paddle.draw(surface)
+    color = surface.get_at((int(paddle.x) + 2, int(paddle.y) + 2))
+    assert color[:3] == RED
+
+    # Change color dynamically
+    paddle.color = BLUE
+    paddle.draw(surface)
+    color = surface.get_at((int(paddle.x) + 2, int(paddle.y) + 2))
+    assert color[:3] == BLUE
