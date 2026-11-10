@@ -6,6 +6,7 @@ import pygame
 
 from src.constants import (
     FONT_SIZE_MESSAGE,
+    FONT_SIZE_NAME,
     FONT_SIZE_SCORE,
     GRAY,
     SCREEN_HEIGHT,
@@ -23,14 +24,19 @@ class Score:
         screen_width: int = SCREEN_WIDTH,
         screen_height: int = SCREEN_HEIGHT,
         target_score: int = TARGET_SCORE,
+        player1_name: str = "Player 1",
+        player2_name: str = "Player 2",
     ):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.player1_score = 0
         self.player2_score = 0
         self.target_score = target_score
+        self.player1_name = player1_name
+        self.player2_name = player2_name
         self.font: pygame.font.Font | None = None
         self.message_font: pygame.font.Font | None = None
+        self.name_font: pygame.font.Font | None = None
 
     def _ensure_fonts(self) -> None:
         """Lazily initialize fonts once pygame.font is ready."""
@@ -38,9 +44,11 @@ class Score:
             try:
                 self.font = pygame.font.Font(None, FONT_SIZE_SCORE)
                 self.message_font = pygame.font.Font(None, FONT_SIZE_MESSAGE)
+                self.name_font = pygame.font.Font(None, FONT_SIZE_NAME)
             except (pygame.error, OSError, RuntimeError):
                 self.font = None
                 self.message_font = None
+                self.name_font = None
 
     def player1_point(self) -> None:
         """Increment score for player 1."""
@@ -60,10 +68,17 @@ class Score:
     def get_winner(self) -> str | None:
         """Return winning player name if game is over, otherwise None."""
         if self.player1_score >= self.target_score:
-            return "Player 1"
+            return self.player1_name
         elif self.player2_score >= self.target_score:
-            return "Player 2"
+            return self.player2_name
         return None
+
+    def set_player_names(
+        self, player1: str = "Player 1", player2: str = "Player 2"
+    ) -> None:
+        """Update player display names."""
+        self.player1_name = player1.strip() or "Player 1"
+        self.player2_name = player2.strip() or "Player 2"
 
     def reset(self) -> None:
         """Reset scores to zero."""
@@ -104,13 +119,24 @@ class Score:
             surface.blit(p1_surf, (width // 4 - p1_surf.get_width() // 2, 20))
             surface.blit(p2_surf, (3 * width // 4 - p2_surf.get_width() // 2, 20))
 
+        # Render player names
+        if self.name_font is not None:
+            p1_name_surf = self.name_font.render(self.player1_name, True, GRAY)
+            p2_name_surf = self.name_font.render(self.player2_name, True, GRAY)
+            surface.blit(
+                p1_name_surf, (width // 4 - p1_name_surf.get_width() // 2, 65)
+            )
+            surface.blit(
+                p2_name_surf, (3 * width // 4 - p2_name_surf.get_width() // 2, 65)
+            )
+
         # Game over screen
         if self.is_game_over() and self.message_font is not None:
             winner = self.get_winner()
             msg = f"{winner} Wins!"
             win_surf = self.message_font.render(msg, True, WHITE)
             sub_surf = self.message_font.render(
-                "Press SPACE or P to Restart, or ESC to Quit", True, GRAY
+                "Press SPACE or P to Restart, M for Menu, or ESC to Quit", True, GRAY
             )
             surface.blit(
                 win_surf,

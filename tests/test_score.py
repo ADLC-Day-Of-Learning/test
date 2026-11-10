@@ -102,3 +102,33 @@ def test_score_draw_and_pause_draw():
         surface.get_at((x, 280))[:3] != (0, 0, 0) for x in range(350, 450)
     )
     assert has_win_pixels
+
+
+def test_custom_player_names_and_winner():
+    """Verify custom player names are preserved and announced upon winning."""
+    score = Score(
+        target_score=2, player1_name="Champion", player2_name="Challenger"
+    )
+    assert score.player1_name == "Champion"
+    assert score.player2_name == "Challenger"
+    assert score.get_winner() is None
+
+    score.player1_point()
+    score.player1_point()
+    assert score.is_game_over() is True
+    assert score.get_winner() == "Champion"
+
+    score.reset()
+    score.set_player_names(player1="Alpha", player2="Beta")
+    score.player2_point()
+    score.player2_point()
+    assert score.is_game_over() is True
+    assert score.get_winner() == "Beta"
+
+
+def test_player_names_empty_fallback():
+    """Verify empty or whitespace-only names fall back to defaults."""
+    score = Score(player1_name="", player2_name="   ")
+    score.set_player_names(player1="", player2="   ")
+    assert score.player1_name == "Player 1"
+    assert score.player2_name == "Player 2"

@@ -21,6 +21,7 @@ from src.constants import (
     SCREEN_WIDTH,
     WINDOW_TITLE,
 )
+from src.menu import Menu
 from src.paddle import Paddle
 from src.score import Score
 from src.sound import SoundManager
@@ -35,12 +36,14 @@ class PongGame:
         screen_height: int = SCREEN_HEIGHT,
         sound_enabled: bool = True,
         headless: bool = False,
+        state: str = "menu",
     ):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.headless = headless
         self.running = True
         self.paused = False
+        self.state = state
 
         if not pygame.get_init():
             pygame.init()
@@ -56,41 +59,107 @@ class PongGame:
         self.clock = pygame.time.Clock()
         self.sound = SoundManager(enabled=sound_enabled)
 
+        # Initialize main menu
+        self.menu = Menu(
+            screen_width=self.screen_width,
+            screen_height=self.screen_height,
+        )
+
         # Initialize paddles (vertically centered)
         p1_x = PADDLE_MARGIN
         p1_y = (self.screen_height - PADDLE_HEIGHT) / 2.0
-        self.paddle1 = Paddle(p1_x, p1_y, screen_height=self.screen_height)
+        self.paddle1 = Paddle(
+            p1_x,
+            p1_y,
+            screen_height=self.screen_height,
+            color=self.menu.player1_color,
+        )
 
         p2_x = self.screen_width - PADDLE_MARGIN - PADDLE_WIDTH
         p2_y = (self.screen_height - PADDLE_HEIGHT) / 2.0
-        self.paddle2 = Paddle(p2_x, p2_y, screen_height=self.screen_height)
+        self.paddle2 = Paddle(
+            p2_x,
+            p2_y,
+            screen_height=self.screen_height,
+            color=self.menu.player2_color,
+        )
 
         # Initialize ball and scoreboard
         self.ball = Ball(
             screen_width=self.screen_width, screen_height=self.screen_height
         )
         self.score = Score(
-            screen_width=self.screen_width, screen_height=self.screen_height
+            screen_width=self.screen_width,
+            screen_height=self.screen_height,
+            player1_name=self.menu.get_player_name(1),
+            player2_name=self.menu.get_player_name(2),
         )
 
+    def set_player_name(self, player: int, name: str) -> None:
+        """Set custom player name for player 1 or 2."""
+        self.menu.set_player_name(player, name)
+        clean_name = self.menu.get_player_name(player)
+        if player == 1:
+            self.score.player1_name = clean_name
+        elif player == 2:
+            self.score.player2_name = clean_name
+        else:
+            raise ValueError(f"Invalid player index: {player}. Must be 1 or 2.")
+
+    def set_paddle_color(
+        self, player: int, color: tuple[int, int, int] | str
+    ) -> None:
+        """Set custom paddle color for player 1 or 2."""
+        self.menu.set_paddle_color(player, color)
+        selected_color = self.menu.get_paddle_color(player)
+        if player == 1:
+            self.paddle1.color = selected_color
+        elif player == 2:
+            self.paddle2.color = selected_color
+        else:
+            raise ValueError(f"Invalid player index: {player}. Must be 1 or 2.")
+
+    def start_game(self) -> None:
+        """Apply player customizations and transition state from menu to playing."""
+        self.score.player1_name = self.menu.get_player_name(1)
+        self.score.player2_name = self.menu.get_player_name(2)
+        self.paddle1.color = self.menu.get_paddle_color(1)
+        self.paddle2.color = self.menu.get_paddle_color(2)
+        self.state = "playing"
+
+    def return_to_menu(self) -> None:
+        """Reset the match and return to the main menu."""
+        self.restart()
+        self.state = "menu"
+
     def handle_input(self) -> None:
-        """Process keyboard events and continuous user input."""
+        """Process keyboard events, mouse events, and continuous user input."""
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 self.running = False
                 return
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.running = False
-                    return
-                elif event.key in (pygame.K_p, pygame.K_SPACE):
-                    if self.score.is_game_over():
-                        self.restart()
-                    else:
-                        self.paused = not self.paused
 
-        # Handle paddle movement when not paused or game over
-        if not self.paused and not self.score.is_game_over():
+            if self.state == "menu":
+                if self.menu.handle_event(event):
+                    self.start_game()
+            else:
+                if event.type == pygame.KEYDOWN:
+                    if event.key in (pygame.K_p, pygame.K_SPACE):
+                        if self.score.is_game_over():
+                            self.restart()
+                        else:
+                            self.paused = not self.paused
+                    elif event.key == pygame.K_m and self.score.is_game_over():
+                        self.return_to_menu()
+
+        # Handle paddle movement when in playing state and not paused or game over
+        if (
+            self.state == "playing"
+            and not self.paused
+            and not self.score.is_game_over()
+        ):
             keys = pygame.key.get_pressed()
             # Player 1 controls (W/S)
             if keys[pygame.K_w]:
@@ -106,7 +175,7 @@ class PongGame:
 
     def update(self) -> None:
         """Advance game physics, handle collisions, and manage scoring."""
-        if self.paused or self.score.is_game_over():
+        if self.state != "playing" or self.paused or self.score.is_game_over():
             return
 
         self.ball.update()
@@ -137,13 +206,16 @@ class PongGame:
     def draw(self) -> None:
         """Render all game components and UI to the screen."""
         self.screen.fill(BLACK)
-        self.score.draw(self.screen)
-        self.paddle1.draw(self.screen)
-        self.paddle2.draw(self.screen)
-        self.ball.draw(self.screen)
+        if self.state == "menu":
+            self.menu.draw(self.screen)
+        else:
+            self.score.draw(self.screen)
+            self.paddle1.draw(self.screen)
+            self.paddle2.draw(self.screen)
+            self.ball.draw(self.screen)
 
-        if self.paused:
-            self.score.draw_pause(self.screen)
+            if self.paused:
+                self.score.draw_pause(self.screen)
 
         if not self.headless:
             pygame.display.flip()

@@ -22,6 +22,7 @@ class Paddle:
         height: int = PADDLE_HEIGHT,
         speed: float = PADDLE_SPEED,
         screen_height: int = SCREEN_HEIGHT,
+        color: tuple[int, int, int] = WHITE,
     ):
         self.initial_x = float(x)
         self.initial_y = float(y)
@@ -31,6 +32,7 @@ class Paddle:
         self.height = height
         self.speed = float(speed)
         self.screen_height = screen_height
+        self.color = color
 
     @property
     def rect(self) -> pygame.Rect:
@@ -53,4 +55,4 @@ class Paddle:
 
     def draw(self, surface: pygame.Surface) -> None:
         """Render the paddle rectangle onto the target surface."""
-        pygame.draw.rect(surface, WHITE, self.rect)
+        pygame.draw.rect(surface, self.color, self.rect)
