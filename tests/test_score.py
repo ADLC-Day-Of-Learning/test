@@ -70,14 +70,35 @@ def test_game_over_and_winner():
 
 
 def test_score_draw_and_pause_draw():
+    """Verify scoreboard and pause overlay rendering and font initialization."""
     surface = pygame.Surface((800, 600))
-    score = Score()
+    score = Score(screen_width=800, screen_height=600)
+    assert score.font is None
+    assert score.message_font is None
+
     # Draw regular score board
-    score.draw(surface, 800, 600)
+    score.draw(surface)
+    assert score.font is not None
+    assert score.message_font is not None
+    # Verify surface modification: center dashed net drawn in GRAY
+    center_color = surface.get_at((400, 5))
+    assert center_color[:3] == (128, 128, 128)
 
     # Draw paused overlay
-    score.draw_pause(surface, 800, 600)
+    surface.fill((0, 0, 0))
+    score.draw_pause(surface)
+    # Verify paused overlay modified the surface
+    has_pause_pixels = any(
+        surface.get_at((x, 275))[:3] != (0, 0, 0) for x in range(350, 450)
+    )
+    assert has_pause_pixels
 
-    # Trigger game over and draw
+    # Trigger game over and draw with explicit dimensions
+    surface.fill((0, 0, 0))
     score.player1_score = TARGET_SCORE
     score.draw(surface, 800, 600)
+    assert score.is_game_over() is True
+    has_win_pixels = any(
+        surface.get_at((x, 280))[:3] != (0, 0, 0) for x in range(350, 450)
+    )
+    assert has_win_pixels

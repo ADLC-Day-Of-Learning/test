@@ -69,7 +69,9 @@ class PongGame:
         self.ball = Ball(
             screen_width=self.screen_width, screen_height=self.screen_height
         )
-        self.score = Score()
+        self.score = Score(
+            screen_width=self.screen_width, screen_height=self.screen_height
+        )
 
     def handle_input(self) -> None:
         """Process keyboard events and continuous user input."""
@@ -135,13 +137,13 @@ class PongGame:
     def draw(self) -> None:
         """Render all game components and UI to the screen."""
         self.screen.fill(BLACK)
-        self.score.draw(self.screen, self.screen_width, self.screen_height)
+        self.score.draw(self.screen)
         self.paddle1.draw(self.screen)
         self.paddle2.draw(self.screen)
         self.ball.draw(self.screen)
 
         if self.paused:
-            self.score.draw_pause(self.screen, self.screen_width, self.screen_height)
+            self.score.draw_pause(self.screen)
 
         if not self.headless:
             pygame.display.flip()
@@ -157,6 +159,8 @@ class PongGame:
     def step(self) -> None:
         """Execute a single game frame."""
         self.handle_input()
+        if not self.running:
+            return
         self.update()
         self.draw()
 

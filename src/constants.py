@@ -36,8 +36,8 @@ FONT_SIZE_SCORE = 48
 FONT_SIZE_MESSAGE = 36
 
 # Paths to sound assets
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ASSETS_DIR = os.path.join(PROJECT_ROOT, "assets")
 SOUNDS_DIR = os.path.join(ASSETS_DIR, "sounds")
 SOUND_BOUNCE = os.path.join(SOUNDS_DIR, "bounce.wav")
 SOUND_WALL = os.path.join(SOUNDS_DIR, "wall.wav")

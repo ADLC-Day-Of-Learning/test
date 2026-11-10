@@ -51,6 +51,18 @@ def test_ball_wall_collision():
     assert ball.check_wall_collision() is False
     assert ball.speed_y == 5.0
 
+    # At top boundary but moving downwards - no collision
+    ball.y = 0.0
+    ball.speed_y = 5.0
+    assert ball.check_wall_collision() is False
+    assert ball.speed_y == 5.0
+
+    # At bottom boundary but moving upwards - no collision
+    ball.y = 600.0 - 15.0
+    ball.speed_y = -5.0
+    assert ball.check_wall_collision() is False
+    assert ball.speed_y == -5.0
+
 
 def test_ball_paddle_collision_and_speedup():
     """Verify ball horizontal direction inverts on paddle contact.
@@ -94,6 +106,20 @@ def test_ball_paddle_collision_and_speedup():
     expected_speed_x_2 = 6.0 * 1.1
     assert abs(abs(ball.speed_x) - expected_speed_x_2) < 1e-5
     assert ball.x == float(right_paddle.rect.left - ball.size)
+
+    # Ball already behind left paddle should not collide
+    ball.x = 10
+    ball.y = 280
+    ball.speed_x = -5.0
+    behind_paddle = Paddle(x=15, y=250, width=15, height=100)
+    assert ball.check_paddle_collision(behind_paddle) is False
+
+    # Ball already behind right paddle should not collide
+    ball.x = 760
+    ball.y = 280
+    ball.speed_x = 5.0
+    behind_right_paddle = Paddle(x=750, y=250, width=15, height=100)
+    assert ball.check_paddle_collision(behind_right_paddle) is False
 
 
 def test_ball_max_speed_cap():

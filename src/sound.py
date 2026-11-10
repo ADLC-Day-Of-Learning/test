@@ -1,5 +1,7 @@
 """Audio manager for Pong sound effects with graceful fallbacks."""
 
+from __future__ import annotations
+
 import os
 import warnings
 

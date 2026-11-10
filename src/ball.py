@@ -1,5 +1,7 @@
 """Ball module handling movement, physics, and collisions."""
 
+from __future__ import annotations
+
 import pygame
 
 from src.constants import (
@@ -72,11 +74,11 @@ class Ball:
             True if a wall collision occurred, False otherwise.
         """
         collided = False
-        if self.y <= 0:
+        if self.y <= 0 and self.speed_y < 0:
             self.y = 0.0
             self.speed_y = abs(self.speed_y)
             collided = True
-        elif self.y + self.size >= self.screen_height:
+        elif self.y + self.size >= self.screen_height and self.speed_y > 0:
             self.y = float(self.screen_height - self.size)
             self.speed_y = -abs(self.speed_y)
             collided = True
@@ -94,13 +96,19 @@ class Ball:
         if not self.rect.colliderect(paddle.rect):
             return False
 
-        if self.speed_x < 0:
-            # Moving left, colliding with left paddle
+        is_left = paddle.rect.centerx < self.screen_width / 2
+
+        if is_left:
+            if self.speed_x >= 0 or self.x < paddle.x:
+                return False
+            # Moving left, colliding with front face of left paddle
             self.x = float(paddle.rect.right)
             new_speed_x = min(abs(self.speed_x) * self.speed_increment, self.max_speed)
             self.speed_x = new_speed_x
         else:
-            # Moving right, colliding with right paddle
+            if self.speed_x <= 0 or (self.x + self.size) > paddle.rect.right:
+                return False
+            # Moving right, colliding with front face of right paddle
             self.x = float(paddle.rect.left - self.size)
             new_speed_x = min(abs(self.speed_x) * self.speed_increment, self.max_speed)
             self.speed_x = -new_speed_x

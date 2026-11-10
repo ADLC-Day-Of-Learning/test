@@ -1,11 +1,15 @@
 """Score and UI overlay rendering for Pygame Pong."""
 
+from __future__ import annotations
+
 import pygame
 
 from src.constants import (
     FONT_SIZE_MESSAGE,
     FONT_SIZE_SCORE,
     GRAY,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
     TARGET_SCORE,
     WHITE,
 )
@@ -14,7 +18,14 @@ from src.constants import (
 class Score:
     """Tracks player scores and renders the scoreboard and UI messages."""
 
-    def __init__(self, target_score: int = TARGET_SCORE):
+    def __init__(
+        self,
+        screen_width: int = SCREEN_WIDTH,
+        screen_height: int = SCREEN_HEIGHT,
+        target_score: int = TARGET_SCORE,
+    ):
+        self.screen_width = screen_width
+        self.screen_height = screen_height
         self.player1_score = 0
         self.player2_score = 0
         self.target_score = target_score
@@ -60,37 +71,41 @@ class Score:
         self.player2_score = 0
 
     def draw(
-        self, surface: pygame.Surface, screen_width: int, screen_height: int
+        self,
+        surface: pygame.Surface,
+        screen_width: int | None = None,
+        screen_height: int | None = None,
     ) -> None:
         """Draw the center line and scoreboard on the surface."""
         self._ensure_fonts()
 
+        width = screen_width if screen_width is not None else self.screen_width
+        height = screen_height if screen_height is not None else self.screen_height
+
         # Center dashed net
         dash_length = 15
         gap = 10
-        center_x = screen_width // 2
+        center_x = width // 2
         y = 0
-        while y < screen_height:
+        while y < height:
             pygame.draw.line(
                 surface,
                 GRAY,
                 (center_x, y),
-                (center_x, min(y + dash_length, screen_height)),
+                (center_x, min(y + dash_length, height)),
                 2,
             )
             y += dash_length + gap
 
         # Render score numbers
-        if self.font:
+        if self.font is not None:
             p1_surf = self.font.render(str(self.player1_score), True, WHITE)
             p2_surf = self.font.render(str(self.player2_score), True, WHITE)
-            surface.blit(p1_surf, (screen_width // 4 - p1_surf.get_width() // 2, 20))
-            surface.blit(
-                p2_surf, (3 * screen_width // 4 - p2_surf.get_width() // 2, 20)
-            )
+            surface.blit(p1_surf, (width // 4 - p1_surf.get_width() // 2, 20))
+            surface.blit(p2_surf, (3 * width // 4 - p2_surf.get_width() // 2, 20))
 
         # Game over screen
-        if self.is_game_over() and self.message_font:
+        if self.is_game_over() and self.message_font is not None:
             winner = self.get_winner()
             msg = f"{winner} Wins!"
             win_surf = self.message_font.render(msg, True, WHITE)
@@ -99,20 +114,25 @@ class Score:
             )
             surface.blit(
                 win_surf,
-                (center_x - win_surf.get_width() // 2, screen_height // 2 - 40),
+                (center_x - win_surf.get_width() // 2, height // 2 - 40),
             )
             surface.blit(
                 sub_surf,
-                (center_x - sub_surf.get_width() // 2, screen_height // 2 + 10),
+                (center_x - sub_surf.get_width() // 2, height // 2 + 10),
             )
 
     def draw_pause(
-        self, surface: pygame.Surface, screen_width: int, screen_height: int
+        self,
+        surface: pygame.Surface,
+        screen_width: int | None = None,
+        screen_height: int | None = None,
     ) -> None:
         """Render pause message overlay."""
         self._ensure_fonts()
-        if self.message_font:
-            center_x = screen_width // 2
+        if self.message_font is not None:
+            width = screen_width if screen_width is not None else self.screen_width
+            height = screen_height if screen_height is not None else self.screen_height
+            center_x = width // 2
             pause_surf = self.message_font.render("PAUSED", True, WHITE)
             hint_surf = self.message_font.render(
                 "Press P or SPACE to Resume", True, GRAY
@@ -121,13 +141,13 @@ class Score:
                 pause_surf,
                 (
                     center_x - pause_surf.get_width() // 2,
-                    screen_height // 2 - 30,
+                    height // 2 - 30,
                 ),
             )
             surface.blit(
                 hint_surf,
                 (
                     center_x - hint_surf.get_width() // 2,
-                    screen_height // 2 + 15,
+                    height // 2 + 15,
                 ),
             )
