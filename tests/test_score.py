@@ -100,7 +100,9 @@ def test_score_draw_and_pause_draw():
     score.draw(surface, 800, 600)
     assert score.is_game_over() is True
     has_win_pixels = any(
-        surface.get_at((x, 280))[:3] != (0, 0, 0) for x in range(350, 450)
+        surface.get_at((x, 280))[:3] != (0, 0, 0)
+        and surface.get_at((x, 280))[:3] != (128, 128, 128)
+        for x in range(350, 450)
     )
     assert has_win_pixels
 
