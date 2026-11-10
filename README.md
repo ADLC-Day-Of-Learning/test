@@ -44,7 +44,7 @@ Pong is one of the earliest arcade video games. In this game, two players contro
 Once dependencies are installed, start the game:
 
 ```bash
-python main.py
+python src/main.py
 ```
 
 ### Controls
