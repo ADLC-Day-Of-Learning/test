@@ -1,5 +1,7 @@
 """Paddle module representing player-controlled paddles."""
 
+from __future__ import annotations
+
 import pygame
 
 from src.constants import (

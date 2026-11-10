@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pong"
+version = "0.1.0"
+description = "Classic 2D Pong game using Pygame"
+requires-python = ">=3.8"
+dependencies = [
+    "pygame>=2.0.0",
+]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "UP",   # pyupgrade
+    "FA",   # flake8-future-annotations (enforces from __future__ import annotations)
+    "I",    # isort
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
