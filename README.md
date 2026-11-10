@@ -16,7 +16,7 @@ Pong is one of the earliest arcade video games. In this game, two players contro
 
 ## Prerequisites
 
-- **Python 3.8+**
+- **Python 3.8+** (authoritative requirements and tooling configuration are defined in `pyproject.toml`)
 - **Pygame 2.0+**
 
 ## Installation
@@ -37,6 +37,10 @@ Pong is one of the earliest arcade video games. In this game, two players contro
    ```bash
    pip install -r requirements.txt
    ```
+   Alternatively, install via `pyproject.toml`:
+   ```bash
+   pip install .
+   ```
 
 ## How to Play
 
@@ -54,6 +58,14 @@ To execute the test suite:
 
 ```bash
 pytest
+```
+
+### Running Linters
+
+To run code quality and Python version compatibility checks with Ruff:
+
+```bash
+ruff check .
 ```
 
 ### Controls
@@ -78,6 +90,7 @@ pytest
 ```text
 .
 ├── README.md        # Project documentation
+├── pyproject.toml   # Project metadata, dependencies, and tooling configuration (Ruff, Pytest)
 ├── requirements.txt # Project dependencies
 ├── src/
 │   ├── __init__.py  # Package initialization

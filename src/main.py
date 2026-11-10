@@ -1,5 +1,7 @@
 """Main game entry point and game loop for Pygame Pong."""
 
+from __future__ import annotations
+
 import os
 import sys
 
@@ -8,10 +10,10 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-import pygame
+import pygame  # noqa: E402
 
-from src.ball import Ball
-from src.constants import (
+from src.ball import Ball  # noqa: E402
+from src.constants import (  # noqa: E402
     BLACK,
     FPS,
     PADDLE_HEIGHT,
@@ -21,10 +23,10 @@ from src.constants import (
     SCREEN_WIDTH,
     WINDOW_TITLE,
 )
-from src.menu import Menu
-from src.paddle import Paddle
-from src.score import Score
-from src.sound import SoundManager
+from src.menu import Menu  # noqa: E402
+from src.paddle import Paddle  # noqa: E402
+from src.score import Score  # noqa: E402
+from src.sound import SoundManager  # noqa: E402
 
 
 class PongGame:
