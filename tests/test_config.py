@@ -19,15 +19,22 @@ def test_pyproject_toml_configuration():
 
     if sys.version_info >= (3, 11):
         import tomllib
+    else:
+        try:
+            import tomli as tomllib
+        except ImportError:
+            pytest.skip("tomllib or tomli required to parse pyproject.toml on Python < 3.11")
 
-        with open(pyproject_path, "rb") as f:
-            config = tomllib.load(f)
+    with open(pyproject_path, "rb") as f:
+        config = tomllib.load(f)
 
-        assert config["project"]["name"] == "pong"
-        assert config["project"]["requires-python"] == ">=3.8"
-        assert config["tool"]["ruff"]["target-version"] == "py38"
-        assert "FA" in config["tool"]["ruff"]["lint"]["select"]
-        assert config["tool"]["pytest"]["ini_options"]["testpaths"] == ["tests"]
+    assert config["build-system"]["build-backend"] == "setuptools.build_meta"
+    assert "setuptools>=61.0" in config["build-system"]["requires"]
+    assert config["project"]["name"] == "pong"
+    assert config["project"]["requires-python"] == ">=3.8"
+    assert config["tool"]["ruff"]["target-version"] == "py38"
+    assert "FA" in config["tool"]["ruff"]["lint"]["select"]
+    assert config["tool"]["pytest"]["ini_options"]["testpaths"] == ["tests"]
 
 
 @pytest.mark.skipif(shutil.which("ruff") is None, reason="ruff is not installed")
