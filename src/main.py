@@ -99,12 +99,7 @@ class PongGame:
         """Set custom player name for player 1 or 2."""
         self.menu.set_player_name(player, name)
         clean_name = self.menu.get_player_name(player)
-        if player == 1:
-            self.score.player1_name = clean_name
-        elif player == 2:
-            self.score.player2_name = clean_name
-        else:
-            raise ValueError(f"Invalid player index: {player}. Must be 1 or 2.")
+        self.score.set_player_name(player, clean_name)
 
     def set_paddle_color(
         self, player: int, color: tuple[int, int, int] | str
@@ -121,15 +116,17 @@ class PongGame:
 
     def start_game(self) -> None:
         """Apply player customizations and transition state from menu to playing."""
-        self.score.player1_name = self.menu.get_player_name(1)
-        self.score.player2_name = self.menu.get_player_name(2)
+        self.score.set_player_name(1, self.menu.get_player_name(1))
+        self.score.set_player_name(2, self.menu.get_player_name(2))
         self.paddle1.color = self.menu.get_paddle_color(1)
         self.paddle2.color = self.menu.get_paddle_color(2)
+        self.menu.reset()
         self.state = "playing"
 
     def return_to_menu(self) -> None:
         """Reset the match and return to the main menu."""
         self.restart()
+        self.menu.reset()
         self.state = "menu"
 
     def handle_input(self) -> None:

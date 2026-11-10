@@ -11,8 +11,10 @@ def test_menu_initialization_defaults():
     menu = Menu(screen_width=800, screen_height=600)
     assert menu.screen_width == 800
     assert menu.screen_height == 600
-    assert menu.player1_name == "Player 1"
-    assert menu.player2_name == "Player 2"
+    assert menu.player1_name == ""
+    assert menu.player2_name == ""
+    assert menu.get_player_name(1) == "Player 1"
+    assert menu.get_player_name(2) == "Player 2"
     assert menu.player1_color == RED
     assert menu.player2_color == BLUE
     assert menu.active_field is None
@@ -159,3 +161,32 @@ def test_menu_draw_rendering():
         )
     )
     assert has_start_pixels
+
+
+def test_menu_default_keyboard_interaction_typing():
+    """Verify typing into default Menu() does not append to 'Player 1'."""
+    menu = Menu()
+    assert menu.player1_name == ""
+    assert menu.player2_name == ""
+
+    # TAB key cycles focus to player1_name
+    menu.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_TAB))
+    assert menu.active_field == "player1_name"
+
+    # Type "Alice" into Player 1 name
+    for ch in "Alice":
+        menu.handle_event(
+            pygame.event.Event(pygame.KEYDOWN, key=ord(ch), unicode=ch)
+        )
+    assert menu.player1_name == "Alice"
+    assert menu.get_player_name(1) == "Alice"
+
+
+def test_menu_reset():
+    """Verify menu reset clears active input field and start flag."""
+    menu = Menu()
+    menu.active_field = "player1_name"
+    menu.start_requested = True
+    menu.reset()
+    assert menu.active_field is None
+    assert menu.start_requested is False

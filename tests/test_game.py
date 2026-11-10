@@ -221,3 +221,25 @@ def test_return_to_menu_from_game_over():
     game.handle_input()
     assert game.state == "menu"
     assert game.score.player1_score == 0
+
+
+def test_return_to_menu_resets_menu_focus():
+    """Verify returning to menu clears active_field and allows SPACE to start."""
+    game = PongGame(headless=True, sound_enabled=False)
+    # Focus active field before starting game
+    game.menu.active_field = "player1_name"
+    game.start_game()
+    assert game.menu.active_field is None
+
+    # Focus active field and trigger game over
+    game.menu.active_field = "player2_name"
+    game.score.player1_score = 11
+    game.return_to_menu()
+    assert game.state == "menu"
+    assert game.menu.active_field is None
+    assert game.menu.start_requested is False
+
+    # SPACE key should start the game since active_field is None
+    pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE))
+    game.handle_input()
+    assert game.state == "playing"

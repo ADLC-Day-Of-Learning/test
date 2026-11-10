@@ -30,16 +30,16 @@ class Menu:
         self,
         screen_width: int = SCREEN_WIDTH,
         screen_height: int = SCREEN_HEIGHT,
-        player1_name: str = "Player 1",
-        player2_name: str = "Player 2",
+        player1_name: str = "",
+        player2_name: str = "",
         player1_color: tuple[int, int, int] = RED,
         player2_color: tuple[int, int, int] = BLUE,
     ):
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self._player1_name = player1_name
-        self._player2_name = player2_name
+        self.player1_name = player1_name
+        self.player2_name = player2_name
         self.player1_color = player1_color
         self.player2_color = player2_color
 
@@ -87,36 +87,25 @@ class Menu:
             (self.screen_width - start_btn_w) // 2, 490, start_btn_w, start_btn_h
         )
 
-    @property
-    def player1_name(self) -> str:
-        return self._player1_name
-
-    @player1_name.setter
-    def player1_name(self, value: str) -> None:
-        self._player1_name = value
-
-    @property
-    def player2_name(self) -> str:
-        return self._player2_name
-
-    @player2_name.setter
-    def player2_name(self, value: str) -> None:
-        self._player2_name = value
+    def reset(self) -> None:
+        """Reset UI interaction states (active field and start flag)."""
+        self.active_field = None
+        self.start_requested = False
 
     def get_player_name(self, player: int) -> str:
         """Return the trimmed player name or default if empty."""
         if player == 1:
-            return self._player1_name.strip() or "Player 1"
+            return self.player1_name.strip() or "Player 1"
         elif player == 2:
-            return self._player2_name.strip() or "Player 2"
+            return self.player2_name.strip() or "Player 2"
         raise ValueError(f"Invalid player index: {player}. Must be 1 or 2.")
 
     def set_player_name(self, player: int, name: str) -> None:
         """Set name for player 1 or player 2."""
         if player == 1:
-            self._player1_name = name
+            self.player1_name = name
         elif player == 2:
-            self._player2_name = name
+            self.player2_name = name
         else:
             raise ValueError(f"Invalid player index: {player}. Must be 1 or 2.")
 
@@ -216,22 +205,22 @@ class Menu:
                     self.active_field = "player1_name"
             elif self.active_field == "player1_name":
                 if event.key == pygame.K_BACKSPACE:
-                    self._player1_name = self._player1_name[:-1]
+                    self.player1_name = self.player1_name[:-1]
                 elif (
                     event.unicode
                     and event.unicode.isprintable()
-                    and len(self._player1_name) < 15
+                    and len(self.player1_name) < 15
                 ):
-                    self._player1_name += event.unicode
+                    self.player1_name += event.unicode
             elif self.active_field == "player2_name":
                 if event.key == pygame.K_BACKSPACE:
-                    self._player2_name = self._player2_name[:-1]
+                    self.player2_name = self.player2_name[:-1]
                 elif (
                     event.unicode
                     and event.unicode.isprintable()
-                    and len(self._player2_name) < 15
+                    and len(self.player2_name) < 15
                 ):
-                    self._player2_name += event.unicode
+                    self.player2_name += event.unicode
 
         return False
 
@@ -260,7 +249,7 @@ class Menu:
             heading="PLAYER 1 (Left)",
             col_x=self.p1_input_rect.x,
             input_rect=self.p1_input_rect,
-            name_text=self._player1_name,
+            name_text=self.player1_name,
             is_active=(self.active_field == "player1_name"),
             selected_color=self.player1_color,
             color_rects=self.p1_color_rects,
@@ -275,7 +264,7 @@ class Menu:
             heading="PLAYER 2 (Right)",
             col_x=self.p2_input_rect.x,
             input_rect=self.p2_input_rect,
-            name_text=self._player2_name,
+            name_text=self.player2_name,
             is_active=(self.active_field == "player2_name"),
             selected_color=self.player2_color,
             color_rects=self.p2_color_rects,

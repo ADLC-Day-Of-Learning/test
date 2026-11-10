@@ -32,8 +32,8 @@ class Score:
         self.player1_score = 0
         self.player2_score = 0
         self.target_score = target_score
-        self.player1_name = player1_name
-        self.player2_name = player2_name
+        self.player1_name = player1_name.strip() or "Player 1"
+        self.player2_name = player2_name.strip() or "Player 2"
         self.font: pygame.font.Font | None = None
         self.message_font: pygame.font.Font | None = None
         self.name_font: pygame.font.Font | None = None
@@ -73,12 +73,24 @@ class Score:
             return self.player2_name
         return None
 
+    def set_player_name(self, player: int, name: str) -> None:
+        """Update display name for player 1 or 2."""
+        cleaned = name.strip()
+        if player == 1:
+            self.player1_name = cleaned or "Player 1"
+        elif player == 2:
+            self.player2_name = cleaned or "Player 2"
+        else:
+            raise ValueError(f"Invalid player index: {player}. Must be 1 or 2.")
+
     def set_player_names(
-        self, player1: str = "Player 1", player2: str = "Player 2"
+        self, player1: str | None = None, player2: str | None = None
     ) -> None:
         """Update player display names."""
-        self.player1_name = player1.strip() or "Player 1"
-        self.player2_name = player2.strip() or "Player 2"
+        if player1 is not None:
+            self.player1_name = player1.strip() or "Player 1"
+        if player2 is not None:
+            self.player2_name = player2.strip() or "Player 2"
 
     def reset(self) -> None:
         """Reset scores to zero."""
