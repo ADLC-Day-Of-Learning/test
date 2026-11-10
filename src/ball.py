@@ -51,11 +51,6 @@ class Ball:
         return math.hypot(self.speed_x, self.speed_y)
 
     @property
-    def speed(self) -> float:
-        """Return the current scalar speed magnitude of the ball."""
-        return self.current_speed
-
-    @property
     def rect(self) -> pygame.Rect:
         """Returns the current pygame.Rect bounding box for the ball."""
         return pygame.Rect(int(self.x), int(self.y), self.size, self.size)

@@ -186,16 +186,14 @@ def test_ball_current_speed_calculation_and_acceleration():
     )
     expected_initial = math.hypot(BALL_INITIAL_SPEED_X, BALL_INITIAL_SPEED_Y)
 
-    # Ball exposes scalar speed and alias property
+    # Ball exposes scalar speed
     assert hasattr(ball, "current_speed")
-    assert hasattr(ball, "speed")
+    assert not hasattr(ball, "speed")
     assert math.isclose(ball.current_speed, expected_initial, rel_tol=1e-2)
-    assert math.isclose(ball.speed, expected_initial, rel_tol=1e-2)
 
     # Accelerate velocity and verify current_speed reflects the increase
     ball.speed_x *= ball.speed_increment
     assert ball.current_speed > expected_initial
-    assert ball.speed == ball.current_speed
 
 
 def test_ball_current_speed_paddle_collision_and_reset():

@@ -182,7 +182,9 @@ def test_score_draw_speedometer():
     surface.fill((0, 0, 0))
     score.draw(surface, ball_speed=8.2)
     has_draw_speed_pixels = any(
-        surface.get_at((x, 30))[:3] != (0, 0, 0) for x in range(360, 440)
+        surface.get_at((x, 30))[:3] != (0, 0, 0)
+        and surface.get_at((x, 30))[:3] != (128, 128, 128)
+        for x in range(360, 440)
     )
     assert has_draw_speed_pixels
 
@@ -193,12 +195,8 @@ def test_score_draw_speedometer():
     score.draw(surface, ball_speed=8.2)
     # The winner text is rendered around height // 2 - 40, so at y=30 no speed text should exist
     has_speed_pixels_at_top = any(
-        surface.get_at((x, 30))[:3] != (0, 0, 0) and surface.get_at((x, 30))[:3] != (128, 128, 128)
+        surface.get_at((x, 30))[:3] != (0, 0, 0)
+        and surface.get_at((x, 30))[:3] != (128, 128, 128)
         for x in range(360, 440)
     )
     assert not has_speed_pixels_at_top
-
-    # Verify score.reset() resets ball_speed attribute
-    score.ball_speed = 10.0
-    score.reset()
-    assert score.ball_speed is None

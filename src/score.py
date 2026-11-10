@@ -28,7 +28,6 @@ class Score:
         target_score: int = TARGET_SCORE,
         player1_name: str = "Player 1",
         player2_name: str = "Player 2",
-        ball_speed: float | None = None,
     ):
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -37,7 +36,6 @@ class Score:
         self.target_score = target_score
         self.player1_name = player1_name.strip() or "Player 1"
         self.player2_name = player2_name.strip() or "Player 2"
-        self.ball_speed = ball_speed
         self.font: pygame.font.Font | None = None
         self.message_font: pygame.font.Font | None = None
         self.name_font: pygame.font.Font | None = None
@@ -103,14 +101,12 @@ class Score:
         """Reset scores to zero."""
         self.player1_score = 0
         self.player2_score = 0
-        self.ball_speed = None
 
     def draw_speedometer(
         self,
         surface: pygame.Surface,
         speed: float,
         screen_width: int | None = None,
-        screen_height: int | None = None,
     ) -> None:
         """Render ball speed indicator on the surface."""
         self._ensure_fonts()
@@ -172,11 +168,8 @@ class Score:
             )
 
         # Render speedometer during active play
-        current_ball_speed = (
-            ball_speed if ball_speed is not None else self.ball_speed
-        )
-        if current_ball_speed is not None and not self.is_game_over():
-            self.draw_speedometer(surface, current_ball_speed, width, height)
+        if ball_speed is not None and not self.is_game_over():
+            self.draw_speedometer(surface, ball_speed, width)
 
         # Game over screen
         if self.is_game_over() and self.message_font is not None:

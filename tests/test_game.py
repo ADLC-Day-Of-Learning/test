@@ -261,7 +261,9 @@ def test_game_speedometer_rendering_and_state_resets():
     game.start_game()
     game.draw()
     has_playing_speed_pixels = any(
-        game.screen.get_at((x, 30))[:3] != (0, 0, 0) for x in range(360, 440)
+        game.screen.get_at((x, 30))[:3] != (0, 0, 0)
+        and game.screen.get_at((x, 30))[:3] != (128, 128, 128)
+        for x in range(360, 440)
     )
     assert has_playing_speed_pixels
 
