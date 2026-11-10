@@ -5,9 +5,11 @@ from __future__ import annotations
 import pygame
 
 from src.constants import (
+    BLACK,
     FONT_SIZE_MESSAGE,
     FONT_SIZE_NAME,
     FONT_SIZE_SCORE,
+    FONT_SIZE_SMALL,
     GRAY,
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
@@ -37,6 +39,7 @@ class Score:
         self.font: pygame.font.Font | None = None
         self.message_font: pygame.font.Font | None = None
         self.name_font: pygame.font.Font | None = None
+        self.small_font: pygame.font.Font | None = None
 
     def _ensure_fonts(self) -> None:
         """Lazily initialize fonts once pygame.font is ready."""
@@ -45,10 +48,12 @@ class Score:
                 self.font = pygame.font.Font(None, FONT_SIZE_SCORE)
                 self.message_font = pygame.font.Font(None, FONT_SIZE_MESSAGE)
                 self.name_font = pygame.font.Font(None, FONT_SIZE_NAME)
+                self.small_font = pygame.font.Font(None, FONT_SIZE_SMALL)
             except (pygame.error, OSError, RuntimeError):
                 self.font = None
                 self.message_font = None
                 self.name_font = None
+                self.small_font = None
 
     def player1_point(self) -> None:
         """Increment score for player 1."""
@@ -97,11 +102,31 @@ class Score:
         self.player1_score = 0
         self.player2_score = 0
 
+    def draw_speedometer(
+        self,
+        surface: pygame.Surface,
+        speed: float,
+        screen_width: int | None = None,
+    ) -> None:
+        """Render ball speed indicator on the surface."""
+        self._ensure_fonts()
+        if self.small_font is None:
+            return
+        width = screen_width if screen_width is not None else self.screen_width
+        center_x = width // 2
+        speed_text = f"Speed: {speed:.1f}"
+        speed_surf = self.small_font.render(speed_text, True, WHITE, BLACK)
+        surface.blit(
+            speed_surf,
+            (center_x - speed_surf.get_width() // 2, 25),
+        )
+
     def draw(
         self,
         surface: pygame.Surface,
         screen_width: int | None = None,
         screen_height: int | None = None,
+        ball_speed: float | None = None,
     ) -> None:
         """Draw the center line and scoreboard on the surface."""
         self._ensure_fonts()
@@ -141,6 +166,10 @@ class Score:
             surface.blit(
                 p2_name_surf, (3 * width // 4 - p2_name_surf.get_width() // 2, 65)
             )
+
+        # Render speedometer during active play
+        if ball_speed is not None and not self.is_game_over():
+            self.draw_speedometer(surface, ball_speed, width)
 
         # Game over screen
         if self.is_game_over() and self.message_font is not None:
