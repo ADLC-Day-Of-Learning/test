@@ -243,3 +243,39 @@ def test_return_to_menu_resets_menu_focus():
     pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE))
     game.handle_input()
     assert game.state == "playing"
+
+
+def test_game_speedometer_rendering_and_state_resets():
+    """Verify speedometer is rendered during playing state and resets on point and restart."""
+    game = PongGame(headless=True, sound_enabled=False)
+    initial_speed = game.ball.current_speed
+
+    # In menu state, speedometer should not be rendered
+    game.draw()
+    has_menu_speed_pixels = any(
+        game.screen.get_at((x, 30))[:3] != (0, 0, 0) for x in range(360, 440)
+    )
+    assert not has_menu_speed_pixels
+
+    # In playing state, draw() renders speedometer
+    game.start_game()
+    game.draw()
+    has_playing_speed_pixels = any(
+        game.screen.get_at((x, 30))[:3] != (0, 0, 0) for x in range(360, 440)
+    )
+    assert has_playing_speed_pixels
+
+    # Accelerate ball and verify current_speed updates
+    game.ball.speed_x *= 1.5
+    assert game.ball.current_speed > initial_speed
+
+    # Score point -> ball resets to initial speed
+    game.ball.x = game.screen_width + 10
+    game.update()
+    assert abs(game.ball.current_speed - initial_speed) < 1e-5
+
+    # Accelerate again and restart match -> ball resets to initial speed
+    game.ball.speed_x *= 2.0
+    assert game.ball.current_speed > initial_speed
+    game.restart()
+    assert abs(game.ball.current_speed - initial_speed) < 1e-5

@@ -161,3 +161,44 @@ def test_score_set_player_names_partial():
     score.set_player_names(player2="Charlie")
     assert score.player1_name == "Alice"
     assert score.player2_name == "Charlie"
+
+
+def test_score_draw_speedometer():
+    """Verify ball speedometer rendering during active play and omission when game over."""
+    surface = pygame.Surface((800, 600))
+    score = Score(screen_width=800, screen_height=600)
+    assert score.small_font is None
+
+    # Calling draw_speedometer directly initializes small_font and renders pixels
+    score.draw_speedometer(surface, speed=7.5)
+    assert score.small_font is not None
+    # Verify speedometer pixels were drawn around center_x (400) and y=25..40
+    has_speed_pixels = any(
+        surface.get_at((x, 30))[:3] != (0, 0, 0) for x in range(360, 440)
+    )
+    assert has_speed_pixels
+
+    # Test draw() with ball_speed parameter
+    surface.fill((0, 0, 0))
+    score.draw(surface, ball_speed=8.2)
+    has_draw_speed_pixels = any(
+        surface.get_at((x, 30))[:3] != (0, 0, 0) for x in range(360, 440)
+    )
+    assert has_draw_speed_pixels
+
+    # Test that game over suppresses speedometer in draw()
+    surface.fill((0, 0, 0))
+    score.player1_score = TARGET_SCORE
+    assert score.is_game_over() is True
+    score.draw(surface, ball_speed=8.2)
+    # The winner text is rendered around height // 2 - 40, so at y=30 no speed text should exist
+    has_speed_pixels_at_top = any(
+        surface.get_at((x, 30))[:3] != (0, 0, 0) and surface.get_at((x, 30))[:3] != (128, 128, 128)
+        for x in range(360, 440)
+    )
+    assert not has_speed_pixels_at_top
+
+    # Verify score.reset() resets ball_speed attribute
+    score.ball_speed = 10.0
+    score.reset()
+    assert score.ball_speed is None

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 import pygame
 
 from src.constants import (
@@ -42,6 +44,16 @@ class Ball:
         self.y = (self.screen_height - self.size) / 2.0
         self.speed_x = self.initial_speed_x
         self.speed_y = self.initial_speed_y
+
+    @property
+    def current_speed(self) -> float:
+        """Return the current scalar speed magnitude of the ball."""
+        return math.hypot(self.speed_x, self.speed_y)
+
+    @property
+    def speed(self) -> float:
+        """Return the current scalar speed magnitude of the ball."""
+        return self.current_speed
 
     @property
     def rect(self) -> pygame.Rect:

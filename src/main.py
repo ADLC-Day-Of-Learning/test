@@ -206,7 +206,7 @@ class PongGame:
         if self.state == "menu":
             self.menu.draw(self.screen)
         else:
-            self.score.draw(self.screen)
+            self.score.draw(self.screen, ball_speed=self.ball.current_speed)
             self.paddle1.draw(self.screen)
             self.paddle2.draw(self.screen)
             self.ball.draw(self.screen)

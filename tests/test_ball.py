@@ -1,5 +1,7 @@
 """Unit tests for the Ball class."""
 
+import math
+
 from src.ball import Ball
 from src.constants import (
     BALL_INITIAL_SPEED_X,
@@ -174,3 +176,52 @@ def test_ball_reset():
 
     ball.reset(direction=-1)
     assert ball.speed_x == -5.0
+
+
+def test_ball_current_speed_calculation_and_acceleration():
+    """Verify that Ball provides current speed and updates on velocity change."""
+    ball = Ball(
+        initial_speed_x=BALL_INITIAL_SPEED_X,
+        initial_speed_y=BALL_INITIAL_SPEED_Y,
+    )
+    expected_initial = math.hypot(BALL_INITIAL_SPEED_X, BALL_INITIAL_SPEED_Y)
+
+    # Ball exposes scalar speed and alias property
+    assert hasattr(ball, "current_speed")
+    assert hasattr(ball, "speed")
+    assert math.isclose(ball.current_speed, expected_initial, rel_tol=1e-2)
+    assert math.isclose(ball.speed, expected_initial, rel_tol=1e-2)
+
+    # Accelerate velocity and verify current_speed reflects the increase
+    ball.speed_x *= ball.speed_increment
+    assert ball.current_speed > expected_initial
+    assert ball.speed == ball.current_speed
+
+
+def test_ball_current_speed_paddle_collision_and_reset():
+    """Verify that paddle collision accelerates ball horizontal speed and reset restores it."""
+    ball = Ball(
+        screen_width=800,
+        screen_height=600,
+        size=15,
+        initial_speed_x=5.0,
+        initial_speed_y=5.0,
+        speed_increment=1.2,
+    )
+    expected_initial = math.hypot(5.0, 5.0)
+    assert math.isclose(ball.current_speed, expected_initial, rel_tol=1e-5)
+
+    paddle = Paddle(x=30, y=250, width=15, height=100)
+    # Position ball near edge of paddle so both speed_x and speed_y result in higher current_speed
+    ball.x = 35
+    ball.y = 340  # near the bottom of paddle (y=250..350)
+    ball.speed_x = -5.0
+
+    collided = ball.check_paddle_collision(paddle)
+    assert collided is True
+    assert abs(ball.speed_x) > 5.0
+    assert ball.current_speed > expected_initial
+
+    # Resetting the ball restores the initial scalar speed
+    ball.reset()
+    assert math.isclose(ball.current_speed, expected_initial, rel_tol=1e-5)
