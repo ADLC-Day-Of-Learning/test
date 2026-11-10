@@ -10,6 +10,17 @@ agents:
       model: google-vertex/gemini-3.8-flash
     - name: review
       model: google-vertex/gemini-3.8-flash
+      subagents:
+        challenger: google-vertex/gemini-3.8-flash
+        correctness: google-vertex/gemini-3.8-flash
+        cross-repo-contracts: google-vertex/gemini-3.8-flash
+        docs-currency: google-vertex/gemini-3.8-flash
+        intent-coherence: google-vertex/gemini-3.8-flash
+        risk-assessment: google-vertex/gemini-3.8-flash
+        security: google-vertex/gemini-3.8-flash
+        security-triage: google-vertex/gemini-3.8-flash
+        style-conventions: google-vertex/gemini-3.8-flash
+        user-experience: google-vertex/gemini-3.8-flash
     - name: triage
       model: google-vertex/gemini-3.8-flash
 create_issues:
