@@ -34,7 +34,7 @@ Pong is one of the earliest arcade video games. In this game, two players contro
 
 3. **Install dependencies:**
    ```bash
-   pip install pygame
+   pip install -r requirements.txt
    ```
 
 ## How to Play
@@ -47,6 +47,14 @@ Once dependencies are installed, start the game:
 python src/main.py
 ```
 
+### Running Tests
+
+To execute the test suite:
+
+```bash
+pytest
+```
+
 ### Controls
 
 | Player | Move Up | Move Down |
@@ -57,18 +65,27 @@ python src/main.py
 - **Pause Game:** `P` or `Space`
 - **Quit Game:** `ESC` or close window
 
-## Planned Project Structure
+## Project Structure
 
 ```text
 .
 ├── README.md        # Project documentation
 ├── requirements.txt # Project dependencies
 ├── src/
+│   ├── __init__.py  # Package initialization
 │   ├── main.py      # Game entry point and main game loop
 │   ├── ball.py      # Ball movement and collision logic
 │   ├── paddle.py    # Paddle movement and player input
 │   ├── score.py     # Scoreboard and UI rendering
+│   ├── sound.py     # Audio manager and sound effects
 │   └── constants.py # Game constants (screen dimensions, speeds, colors)
+├── tests/           # Unit and integration test suite
+│   ├── conftest.py  # Pytest configuration and fixtures
+│   ├── test_ball.py # Ball physics and collision tests
+│   ├── test_game.py # Game loop and input handling tests
+│   ├── test_paddle.py # Paddle movement and bounds tests
+│   ├── test_score.py  # Score tracking and UI rendering tests
+│   └── test_sound.py  # Sound manager fallback tests
 └── assets/
     └── sounds/      # Sound effects for ball bounce and scoring
 ```
